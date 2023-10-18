@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Threading.Tasks;
 using Teg_Coding_Challenge.ModelBO;
 
 namespace Teg_Coding_Challenge.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TegEventsController : ControllerBase
+    public class TegVenuesController : ControllerBase
     {
-      
         private string URL;
-        
-        public TegEventsController(Globals url) {
+        public TegVenuesController(Globals url)
+        {
 
             URL = url.GlobalApiUrl;
         }
@@ -21,9 +19,10 @@ namespace Teg_Coding_Challenge.Controllers
         public async Task<IActionResult> Get()
         {
             EventListing eventListing = new EventListing();
+            List<Venue> lstVenues= new List<Venue>();
             try
             {
-               
+
 
                 using (HttpClient httpClient = new HttpClient())
                 {
@@ -32,6 +31,8 @@ namespace Teg_Coding_Challenge.Controllers
                     {
                         string json = await response.Content.ReadAsStringAsync();
                         eventListing = JsonConvert.DeserializeObject<EventListing>(json);
+                        lstVenues = eventListing.Venues;
+
                     }
                     else
                     {
@@ -43,8 +44,11 @@ namespace Teg_Coding_Challenge.Controllers
             {
                 return BadRequest($"HTTP request failed Reason {ex.Message}");
             }
-            return Ok(eventListing);
+            return Ok(lstVenues);
+
+
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -69,8 +73,10 @@ namespace Teg_Coding_Challenge.Controllers
             {
                 return BadRequest($"HTTP request failed Reason {ex.Message}");
             }
-            var selectedEvent = eventListing.Venues.FirstOrDefault(x => x.Id == id);
+            var selectedEvent = eventListing.Events.Where(x => x.VenueId == id).ToList();
             return Ok(selectedEvent);
         }
+
+
     }
 }

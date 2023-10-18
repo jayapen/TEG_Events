@@ -12,9 +12,127 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    $(document).ready(function () {
+        getTegVenues();
+        $("#eventDropdown").change(function () {
+
+            var selectedEventText = $("#eventDropdown option:selected").text();
+            var selectedEventValue = $("#eventDropdown option:selected").val();
+            if (selectedEventText === "All Events") {
+                location.reload();
+                return;
+            }
+
+            var calendarEl = document.getElementById('calendar');
+            var d = new Date();
+            var month = d.getMonth() + 1;
+            var day = d.getDate();
+            var output = d.getFullYear() + '-' +
+                (('' + month).length < 2 ? '0' : '') + month + '-' +
+                (('' + day).length < 2 ? '0' : '') + day;
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                headerToolbar: {
+                    left: 'prev',
+                    center: 'title',
+                    right: 'next',
+                },
+                initialDate: output,
+                navLinks: true,
+                selectable: true,
+                selectMirror: true,
+                select: function (arg) {
+
+                },
+                events: function (fetchInfo, successCallback, failureCallback) {
+
+                    $.ajax({
+                        url: '/api/TegVenues/' + selectedEventValue,
+                        type: 'GET',
+                        dataType: 'json',
+                        beforeSend: function () {
+                            $('#divLoaderVenue').show();
+                        },
+                        success: function (data) {
+                            $('#divLoaderVenue').hide();
+
+                            var events = data.map(function (event) {
+                                return {
+                                    id: event.id,
+                                    title: event.name,
+                                    start: event.startDate,
+                                    description: event.description,
+                                    venueId: event.venueId
+                                };
+                            });
+                            $('#divLoder').hide();
+                            console.log(events);
+
+                            successCallback(events);
+                        },
+                        error: function (xhr, status, error) {
+                            $('#divAlert').html(xhr.responseText);
+                            $('#divAlert').show();
+                            $('#divLoder').hide();
+
+                            failureCallback(error);
+                        }
+                    });
+                },
+                eventDrop: function (args) {
+
+                },
+                eventClick: function (arg) {
+                    if (arg.event.id > 0) {
+                        console.log(arg.event);
+                        console.log(arg.event.id);
+                        console.log(arg.event.title);
+                        console.log(arg.event._def.extendedProps.description);
+                        console.log(arg.event._def.extendedProps.venueId);
+                        console.log(arg.event.start);
+
+                        //fetching venue details
+                        $.ajax({
+                            url: '/api/TegEvents/' + arg.event._def.extendedProps.venueId,
+                            type: 'GET',
+                            dataType: 'json',
+                            beforeSend: function () {
+                                $('#divLoder').show();
+                            },
+                            success: function (data) {
+                                $('#divLoder').hide();
+                                console.log(data);
+                                $("#lblEventAddress").text(data.name);
+                                $("#lblEventLocation").text(data.location);
+                            },
+                            error: function (xhr, status, error) {
+
+                            }
+                        });
+
+                        const formattedDate = formatDate(arg.event.start);
+                        $('#TegDetailsPopup').modal('show');
+                        $("#lbleventName").html("<b>" + arg.event.title + "</b><br>");
+                        $("#lblEventDate").text("Event Date :" + formattedDate);
+
+                    }
+                },
+                editable: true,
+                dayMaxEvents: true,
+                //events: getEvents(),
+            });
+            calendar.render();
+
+
+
+
+        });
+
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
 
-        var calendarEl = document.getElementById('calendar');       
+        var calendarEl = document.getElementById('calendar');
         var d = new Date();
         var month = d.getMonth() + 1;
         var day = d.getDate();
@@ -64,7 +182,7 @@
                         $('#divAlert').html(xhr.responseText);
                         $('#divAlert').show();
                         $('#divLoder').hide();
-                       
+
                         failureCallback(error);
                     }
                 });
@@ -117,6 +235,36 @@
     function ClosePopup() {
         $('#TegDetailsPopup').modal('hide');
     }
+    function getTegVenues() {
+
+        $.ajax({
+            url: '/api/TegVenues',
+            type: 'GET',
+            dataType: 'json',
+            beforeSend: function () {
+                $('#divLoaderVenue').show();
+            },
+            success: function (data) {
+                $('#divLoder').hide();
+                var dropdown = $("#eventDropdown");
+                dropdown.empty();
+                dropdown.append($("<option>").val("").text("All Events"));
+
+                // Populate the dropdown with data from the API
+                $.each(data, function (index, event) {
+                    dropdown.append($("<option>").val(event.id).text(event.name));
+                });
+
+                $('#divLoaderVenue').hide();
+            },
+            error: function (xhr, status, error) {
+                $('#divAlert').html(xhr.responseText);
+                $('#divAlert').show();
+                $('#divLoaderVenue').hide();
+            }
+        });
+
+    }
 
     function formatDate(date) {
         const day = date.getDate().toString().padStart(2, '0');
@@ -125,17 +273,29 @@
         return `${day}/${month}/${year}`;
     }
 
+
 </script>
 
 <div class="text-center">
+    <div>
+        <h2>Whats new on TEG's Stadium !' </h2>
+    </div>
     <div id="calendar-container" style="max-width: 800px; margin: 0 auto;">
         <div id="divLoader" style="display:none;">
             <img width="81px" height="60" src="~/images/loader_.gif">
         </div>
         <div id="divAlert" class="alert-danger" style="display:none"></div>
-        <div>
-            <h2>Whats new on TEG's Stadium !' </h2>
+        <h5 class="inline-elements">Select a Venue:</h5>
+        <div class="inline-elements" id="divLoaderVenue" style="display:block;">
+            <img width="81px" height="60" src="~/images/loader_.gif">
         </div>
+
+
+
+        <select id="eventDropdown" class="inline-elements">
+        </select>
+
+
         <div id="calendar"></div>
     </div>
 </div>
@@ -149,7 +309,7 @@
             <div class="modal-header">
                 <h4 class="modal-title">Teg Event</h4>
             </div>
-          
+            <!-- Modal body -->
             <div id="divEventText" class="modal-body">
                 <label id="lbleventName"></label><br />
                 <label id="lblEventDate"></label><br />
