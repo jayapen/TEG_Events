@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Teg_Coding_Challenge;
 
 namespace YourNamespace
 {
@@ -14,6 +15,7 @@ namespace YourNamespace
 
             // Add Razor Pages services
             services.AddRazorPages();
+            services.AddSingleton<Globals>();
 
             // Configure any additional services for your API or Razor Pages if needed
         }
