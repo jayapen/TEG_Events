@@ -1,0 +1,8 @@
+D:\TEG\Teg_Coding_Challenge\Teg_Coding_Challenge\obj\Release\net6.0\PubTmp\Out\Teg_Coding_Challenge.exe
+D:\TEG\Teg_Coding_Challenge\Teg_Coding_Challenge\obj\Release\net6.0\PubTmp\Out\appsettings.Development.json
+D:\TEG\Teg_Coding_Challenge\Teg_Coding_Challenge\obj\Release\net6.0\PubTmp\Out\appsettings.json
+D:\TEG\Teg_Coding_Challenge\Teg_Coding_Challenge\obj\Release\net6.0\PubTmp\Out\Teg_Coding_Challenge.dll
+D:\TEG\Teg_Coding_Challenge\Teg_Coding_Challenge\obj\Release\net6.0\PubTmp\Out\Teg_Coding_Challenge.deps.json
+D:\TEG\Teg_Coding_Challenge\Teg_Coding_Challenge\obj\Release\net6.0\PubTmp\Out\Teg_Coding_Challenge.runtimeconfig.json
+D:\TEG\Teg_Coding_Challenge\Teg_Coding_Challenge\obj\Release\net6.0\PubTmp\Out\Teg_Coding_Challenge.pdb
+D:\TEG\Teg_Coding_Challenge\Teg_Coding_Challenge\obj\Release\net6.0\PubTmp\Out\Newtonsoft.Json.dll
